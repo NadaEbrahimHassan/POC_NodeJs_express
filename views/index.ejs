@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Students List</h2>
+
+    <table style="width:100%">
+        <tr>
+            <th>Name</th>
+            <th>Grade</th>
+            <th>Score</th>
+        </tr>
+        <%for(i=0;i<list.length;i++){%>
+        <tr>
+            <td><%=list[i].name%></td>
+            <td><%=list[i].grade%></td>
+            <td><%=list[i].score%></td>
+        </tr>
+        <%}%>
+        
+    </table>
+
+</body>
+
+</html>
