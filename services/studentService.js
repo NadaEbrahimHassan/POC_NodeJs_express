@@ -25,11 +25,15 @@ function getAllStudentWithScoreMapping() {
     return studentMappingScoreList;
 }
 
-function writeToFile(path, data, res) {
-    return fs.writeFile(path, data, (err) => {
-        if (!err)
-            res.send(true);
-        throw (err);
+async function writeToFile(path, data) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path, data, async (err) => {
+            if (err)
+                reject(err);
+            else
+                resolve();
+        });
+
     });
 }
 
