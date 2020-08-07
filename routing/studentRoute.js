@@ -1,6 +1,6 @@
 const express = require('express');
 const studentRoute = express.Router();
-const studentControler = require('../controllers/studentController.js');
+const studentControler = require('../controllers/studentCacheController.js');
 
 function route() {
 

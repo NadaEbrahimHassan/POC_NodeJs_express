@@ -1,4 +1,6 @@
 const studentService = require('../services/studentService.js');
+const studentCacheService = require('../cache/studentCache.js');
+
 var uuid = require('uuid');
 
 const studentValidation = require('../validation/studentsValidation.js');
@@ -25,19 +27,14 @@ const postStudent = [studentRequestValidation, (req, res, next) => {
         });
     }
     else {
-        let studentDataList = studentService.getAllStudents();
         req.body.id = uuid.v1();
-        studentDataList.push(req.body);
-
-        studentService.writeToFile('data/students.json', JSON.stringify(studentDataList)).then(() => {
-            res.status(201).send(req.body);
-        }).catch((err) => {
-            next(err);
-        });
+        studentCacheService.addStudent(req.body);
+        res.status(201).send(req.body);
     }
 }];
 
 const patchStudent = [studentRequestValidation, (req, res, next) => {
+
 
     result = studentValidation.getValidationResult(req);
     if (result) {
@@ -47,15 +44,15 @@ const patchStudent = [studentRequestValidation, (req, res, next) => {
         });
     }
     else {
-        let studentDataList = studentService.getAllStudents();
-        var index = studentDataList.findIndex(s => s.id == req.body.id);
-        studentDataList[index] = req.body;
-
-        studentService.writeToFile('data/students.json', JSON.stringify(studentDataList)).then(() => {
-            res.status(200).send('Ok');
-        }).catch((err) => {
-            next(err);
-        });
+        let result = studentCacheService.updateStudent(req.body);
+        if (result)
+            res.status(200).send(req.body);
+        else {
+            next({
+                status: 401,
+                message: 'Student Not Found'
+            });
+        }
     }
 }];
 
@@ -63,7 +60,6 @@ const deleteStudent = async (req, res, next) => {
 
     let studentDataList = studentService.getAllStudents();
     var index = studentDataList.findIndex(s => s.id == req.params.id);
-    console.log(index)
     if (index < 0) {
         next({
             status: 401,
@@ -71,14 +67,11 @@ const deleteStudent = async (req, res, next) => {
         });
     }
     else {
-        studentDataList.splice(index, 1);
-        console.log(studentDataList)
-
-        studentService.writeToFile('data/students.json', JSON.stringify(studentDataList)).then(() => {
-            res.status(200).send('Ok');
-        }).catch((err) => {
-            next(err);
-        });
+        let result = studentCacheService.deleteStudent(req.params.id);
+        if (result)
+            res.status(200).send('ok');
+        else
+            next();
     }
 }
 
